@@ -9,10 +9,17 @@ I will provide a proper readme here in the future, but for the moment just the b
 - The controls button currently does not do anything, but in the future I will have it pop out a small window to configure your controls before starting the seed
 
 Credit:
+
 Dessy - creator of the Super Metroid randomizer from which the previous Project Base randomizer versions were based
+
 Gala - creator of the previous Project Base randomizer versions, from which most of the current location logic is based
+
 Bob and Kaz - help troubleshooting ideas and code for randomization
+
 Creators of the following hacks for the samus suit palettes - Phazon Hack, Hallowseve, Final Stand, Hangtime, Lost World, Vanilla++, Hyper Metroid, Ice Metal
+
 Bob - all of the new fonts used for font randomization
+
 Grime - creator of Project Base and also creator of the 'Project Base Extended' suit palettes
+
 Everyone that has tested seeds as well as the program itself
