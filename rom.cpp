@@ -32,7 +32,7 @@ void Rom::makeNewRom(wxString fileName) {
 	output->Write(_dataBuffer, _rom->Length());
 }
 
-wxByte Rom::getByte(int offset) {
+wxByte Rom::getByte(uint64_t offset) {
 	if (offset < _rom->Length()) {
 		return _dataBuffer[offset];
 
@@ -42,7 +42,7 @@ wxByte Rom::getByte(int offset) {
 	}
 }
 
-void Rom::setByte(int offset, wxByte byte) {
+void Rom::setByte(uint64_t offset, wxByte byte) {
 	if (offset >= _rom->Length()) {
 		std::cout << "invalid offset! Can't access offset " << offset << std::endl;
 		return;
@@ -52,7 +52,7 @@ void Rom::setByte(int offset, wxByte byte) {
 	_dataBuffer[offset] = byte;
 }
 
-void Rom::setWord(int offset, uint16_t word) {
+void Rom::setWord(uint64_t offset, uint16_t word) {
 	if (offset >= _rom->Length()) {
 		std::cout << "invalid offset! Can't access offset " << offset << std::endl;
 		return;
@@ -63,7 +63,7 @@ void Rom::setWord(int offset, uint16_t word) {
 	_dataBuffer[offset + 1] = (word & 0xFF00) >> 8;
 }
 
-void Rom::setBytes(int offset, wxVector<wxByte> bytes) {
+void Rom::setBytes(uint64_t offset, wxVector<wxByte> bytes) {
 	if ((offset + bytes.size()) >= _rom->Length()) {
 		std::cout << "invalid offset! Can't access offset and/or number of bytes " << offset << std::endl;
 		return;
@@ -77,15 +77,15 @@ void Rom::setBytes(int offset, wxVector<wxByte> bytes) {
 
 void Rom::applyPatch(wxByte *patch) {
 	if ((patch[0] == 'P') && (patch[1] == 'A') && (patch[2] == 'T') && (patch[3] == 'C') && (patch[4] == 'H')) {
-		int index = 5;
-		while ((patch[index] != 'E') && (patch[index + 1] != 'O') && (patch[index + 2] != 'F')) {
-			int currentOffset = ((int) (patch[index] << 16)) | ((int) (patch[index + 1] << 8)) | ((int) patch[index + 2]);
+		uint64_t index = 5;
+		while (!((patch[index] == 'E') && (patch[index + 1] == 'O') && (patch[index + 2] == 'F'))) {
+			uint64_t currentOffset = (((uint64_t) (patch[index]) << 16)) | (((uint64_t) (patch[index + 1]) << 8)) | (((uint64_t) patch[index + 2]));
 			index += 3;
-			int currentSize = ((uint16_t) (patch[index] << 8)) | ((uint16_t) patch[index + 1]);
+			uint16_t currentSize = ((uint16_t) (patch[index] << 8)) | ((uint16_t) patch[index + 1]);
 			index += 2;
 			if (currentSize == 0) {
 				// RLE
-				int rleSize = ((uint16_t) (patch[index] << 8)) | ((uint16_t) patch[index + 1]);
+				uint16_t rleSize = ((uint16_t) (patch[index] << 8)) | ((uint16_t) patch[index + 1]);
 				index += 2;
 				for (int i = 0; i < rleSize; i++) {
 					setByte(currentOffset + i, patch[index]);

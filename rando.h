@@ -175,7 +175,7 @@ protected:
 	uint16_t _options1 = 0xFDF9;
 	uint16_t _options2 = 0x0314;
 
-	uint64_t _tricks1 = 0x89000000;
+	uint64_t _tricks1 = 0x80000000;
 
 	// And now the names and descriptions, which won't change, so we can just write them out here
 	wxString _optionNames[26] = {"Auto-morph", "Beam Flicker", "Beam Trails", "Morph Flash", "Spark Exit", "Low Health Alert",
@@ -219,6 +219,7 @@ protected:
 	wxCheckBox *_mysteryItemGfx;
 	wxCheckBox *_gravityHeat;
 	wxCheckBox *_majorMinor;
+	wxCheckBox *_partyRando;
 	wxSpinCtrl *_energyLow;
 	wxSpinCtrl *_energyMed;
 	wxSpinCtrl *_energyHigh;
@@ -273,6 +274,7 @@ protected:
 	// These are the patches needed for the rom, in the form of byte buffers
 	wxByte *_patchEvents;
 	wxByte *_patchSkipCeres;
+	wxByte *_patchEffects;
 
 	// These are patches needed for fixing things in the vanilla map version of PB
 	wxByte *_patchDashBall;

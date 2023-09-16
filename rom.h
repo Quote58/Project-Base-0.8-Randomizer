@@ -29,10 +29,10 @@ public:
 	wxString _name;										// The name of the rom file
 
 	void makeNewRom(wxString fileName);					// Creates a new rom from the data buffer
-	wxByte getByte(int offset);							// Gets a single byte from the rom at offset
-	void setByte(int offset, wxByte byte);				// Sets the byte at offset in the buffer to byte
-	void setWord(int offset, uint16_t word);			// Sets each byte of a word at a given offset in the buffer
-	void setBytes(int offset, wxVector<wxByte> bytes);	// Sets the bytes at offset in the buffer to bytes
+	wxByte getByte(uint64_t offset);							// Gets a single byte from the rom at offset
+	void setByte(uint64_t offset, wxByte byte);				// Sets the byte at offset in the buffer to byte
+	void setWord(uint64_t offset, uint16_t word);			// Sets each byte of a word at a given offset in the buffer
+	void setBytes(uint64_t offset, wxVector<wxByte> bytes);	// Sets the bytes at offset in the buffer to bytes
 	void applyPatch(wxByte *patch);						// Applies an ips patch supplied as a byte buffer to the rom buffer
 	void mountUndoCodeRead();
 };

@@ -166,8 +166,12 @@ void RandoFrame::onRandomize(wxCommandEvent& event) {
 	if (_gravityHeat->GetValue() == false) {
 		// If we don't want it to stop heat, we need to change the game code and leave the player object unchanged
 		// Just changes the bit check in samus heat pre-instruction from 21 (varia + gravity) to 01 (varia)
-		// *** Mother brain does a huge amount of damage now?!? ***
+		// *** Mother brain does a huge amount of damage now?!? But only in vanilla mode? ***
 		_rom->setByte(kAddrHeat, 0x01);
+	}
+
+	if (_partyRando->GetValue() == true) {
+		_rom->applyPatch(_patchEffects);
 	}
 
 	// Set the options to their respective words
@@ -703,8 +707,11 @@ void RandoFrame::populateMainPanel() {
 
 	_majorMinor = new wxCheckBox(logicOptionsBox->GetStaticBox(), wxID_ANY, "Major / Minor item split", wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, wxEmptyString);
 
+	_partyRando = new wxCheckBox(logicOptionsBox->GetStaticBox(), wxID_ANY, "Party Rando", wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, wxEmptyString);
+
 	logicOptionsBox->Add(_gravityHeat, 0, wxGROW | wxLEFT, 9);
 	logicOptionsBox->Add(_majorMinor, 0, wxGROW | wxLEFT | wxTOP, 9);
+	logicOptionsBox->Add(_partyRando, 0, wxGROW | wxLEFT | wxTOP, 9);
 
 	// Next the energy requirement box
 	wxBoxSizer *energySizer = new wxBoxSizer(wxHORIZONTAL);
@@ -862,7 +869,7 @@ void RandoFrame::onDifficultyChoice(wxCommandEvent &event) {
 			_energyLow->SetValue(1);
 			_energyMed->SetValue(3);
 			_energyHigh->SetValue(5);
-			_tricks1 = 0x89000000;
+			_tricks1 = 0x80000000;
 			break;
 		// Normal
 		case 1:
