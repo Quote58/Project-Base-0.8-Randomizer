@@ -427,9 +427,6 @@ void RandoFrame::logic() {
 							pos = rand() % availableLocations.size();
 							setItem(availableLocations, pos, kRPowerBombs, itemPool, allWeights);
 						}
-						// We need to also include power bombs in the requirements to remove, because we just collected some
-						// *** Remember to do this with missiles as well, when missile requirements get added ***
-						requirements.insert(kRPowerBombs);
 					}
 
 				} else if (*it >= kREnergy) {
