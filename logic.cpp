@@ -288,7 +288,7 @@ struct RequirementHash {
 	std::size_t operator()(const std::unordered_set<uint64_t, wxIntegerHash> &set) const {
 		std::size_t hash = 0;
 		// Really simple, for every set of requirements, combine the hash of each requirement to make a total hash of them all
-		for (std::unordered_set<uint64_t, wxIntegerHash>::iterator it = set.begin(); it != set.end(); it++) {
+		for (std::unordered_set<uint64_t, wxIntegerHash>::const_iterator it = set.begin(); it != set.end(); it++) {
 			hash ^= std::hash<uint64_t>{}(*it);
 		}
 		// Then just return the total hash
@@ -335,6 +335,9 @@ void RandoFrame::logic() {
 			// Erase the last items left in requirements
 			for (std::unordered_set<uint64_t, wxIntegerHash>::iterator it = requirements.begin(); it != requirements.end(); it++) {
 				locations[i].items.erase(*it);
+				if (*it == kRPBLow) {
+					locations[i].items.erase(kRPowerBombs);
+				}
 			}
 
 			// Check the requirements for each location, and if it is available add it to the available locations
@@ -370,7 +373,7 @@ void RandoFrame::logic() {
 				if (it->size() == lowest){
 					// But not if it's a 2 power bomb check and we only have 1 location
 					if (!((it->find(kRPBLow) != it->end()) && (availableLocations.size() < it->size() - 1 + (kRPBLow & 0xF)))) {
-						for (std::unordered_set<uint64_t, wxIntegerHash>::iterator newIt = it->begin(); newIt != it->end(); newIt++) {
+						for (std::unordered_set<uint64_t, wxIntegerHash>::const_iterator newIt = it->begin(); newIt != it->end(); newIt++) {
 							if (*newIt == kRPBLow) {
 								weight += itemPool[kRPowerBombs].weight;
 							} else if (*newIt >= kREnergy) {
@@ -507,7 +510,13 @@ void RandoFrame::setItem(wxVector<Location> &locations, int pos, uint64_t item, 
 	if (itemPool[item].value == 0xEFD8) {
 		// Item is dash ball, which has no chozo/hidden version, so we set it to open
 		_rom->setWord(locations[pos].addr, itemPool[item].value);
-	
+	/*} else if ((itemPool[item].value == 0xEEDB) && (itemPool[kRMissiles].number != 50)) {
+		if (rand() % 1 == 0) {
+			_rom->setWord(locations[pos].addr, 0xEFE0);
+		} else {
+			_rom->setWord(locations[pos].addr, itemPool[item].value + ((locations[pos].hidden * 21) * 4));
+		}*/
+
 	} else {
 		// All other items get hidden or not hidden based on the location
 		// Each item header is 4 bytes, and there are 21 items
