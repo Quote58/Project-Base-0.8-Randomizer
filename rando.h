@@ -93,6 +93,136 @@ struct Player {
 	int missilesHigh = 0;
 };
 
+enum ObjectType {
+	kObjNone,
+	kObjNatural,
+	kObjMetal,
+	kObjStone,
+	kObjGlass,
+	kObjWater
+};
+
+enum Relationship {
+	kRelNone,
+	kRelCompliment,
+	kRelAnalogous,
+	kRelTriadic,
+	kRelTetradic
+};
+
+struct PalColour {
+	int index = 0;
+	ObjectType object = kObjNone;
+	Relationship relation = kRelNone;
+	int reference = -1;
+	float saturation = 1;
+	int gradient = 0;
+	int brightnessS = 100;
+	int brightnessE = -1;
+	float hueShift = 0;
+	bool background = false;
+	int tileset = -1;
+	const wxColour *hardCoded = nullptr;
+
+	PalColour(int i, ObjectType obj, Relationship rel, int ref, float sat, int grad, int bS, int bE, float shift, int tile) {
+		index = i;
+		object = obj;
+		relation = rel;
+		reference = ref;
+		saturation = sat;
+		gradient = grad;
+		brightnessS = bS;
+		brightnessE = bE;
+		hueShift = shift;
+		tileset = tile;
+	}
+
+	PalColour(int i, ObjectType obj, Relationship rel, int ref, float sat, int grad, int bS, int bE, float shift) {
+		index = i;
+		object = obj;
+		relation = rel;
+		reference = ref;
+		saturation = sat;
+		gradient = grad;
+		brightnessS = bS;
+		brightnessE = bE;
+		hueShift = shift;
+	}
+
+
+	PalColour(int i, ObjectType obj, Relationship rel, int ref, float sat, int grad, int bS, int bE) {
+		index = i;
+		object = obj;
+		relation = rel;
+		reference = ref;
+		saturation = sat;
+		gradient = grad;
+		brightnessS = bS;
+		brightnessE = bE;
+	}
+
+	PalColour(int i, bool bg, ObjectType obj, Relationship rel, int ref, float sat, int grad, int bS, int bE) {
+		index = i;
+		object = obj;
+		relation = rel;
+		reference = ref;
+		saturation = sat;
+		gradient = grad;
+		brightnessS = bS;
+		brightnessE = bE;
+		background = bg;
+	}
+
+	PalColour(int i, bool bg, ObjectType obj, Relationship rel, int ref, float sat, int grad, int bS, int bE, float shift) {
+		index = i;
+		object = obj;
+		relation = rel;
+		reference = ref;
+		saturation = sat;
+		gradient = grad;
+		brightnessS = bS;
+		brightnessE = bE;
+		background = bg;
+		hueShift = shift;
+	}
+
+	PalColour(int i, int ref, int bS) {
+		index = i;
+		reference = ref;
+		brightnessS = bS;
+	}
+
+	PalColour(int i, int ref, int grad, int bS, int bE) {
+		index = i;
+		reference = ref;
+		gradient = grad;
+		brightnessS = bS;
+		brightnessE = bE;
+	}
+
+	PalColour(int i, int ref, int grad, int bS, int bE, float shift) {
+		index = i;
+		reference = ref;
+		gradient = grad;
+		brightnessS = bS;
+		brightnessE = bE;
+		hueShift = shift;
+	}
+
+	PalColour(int i, const wxColour *hard) {
+		index = i;
+		hardCoded = hard;
+	}
+
+	PalColour(int i, wxColour hard, int grad, int bS, int bE) {
+		index = i;
+		gradient = grad;
+		brightnessS = bS;
+		brightnessE = bE;
+		hardCoded = &hard;
+	}
+};
+
 // We're going to need a dictionary for the items
 WX_DECLARE_HASH_MAP(uint64_t, Item, wxIntegerHash, wxIntegerEqual, ItemDict);
 
@@ -200,12 +330,20 @@ protected:
 	// And all the components we need to be able to reference within logic
 	wxCheckBox *_romType;
 
+	wxColour _examplePalette[256];
+	wxGrid *_paletteGrid;
+
 	  wxChoice *_hud;
 	  wxChoice *_pauseDefault;
 	  wxChoice *_bomb;
 	wxCheckBox *_logCheck;
 	wxCheckBox *_skipCeres;
+	wxColourPickerCtrl *_hudColourPicker;
+	wxColourPickerCtrl *_hudColourPicker2;
 	wxCheckBox *_shuffleTilePal;
+	wxCheckBox *_shuffleTilePalGreyscale;
+	wxCheckBox *_shuffleTilePalSilhouette;
+	wxCheckBox *_shuffleTilePalContinuity;
 	wxCheckBox *_shuffleEnemyPal;
 	wxCheckBox *_shuffleBeamPal;
 	wxCheckBox *_shuffleSuitPal;
@@ -217,9 +355,11 @@ protected:
 	wxCheckBox *_shuffleFontNGfx;
 	wxCheckBox *_shuffleFontTGfx;
 	wxCheckBox *_mysteryItemGfx;
+	wxCheckBox *_shuffleFX1;
 	wxCheckBox *_gravityHeat;
 	wxCheckBox *_majorMinor;
 	wxCheckBox *_partyRando;
+	wxCheckBox *_floodMode;
 	wxSpinCtrl *_energyLow;
 	wxSpinCtrl *_energyMed;
 	wxSpinCtrl *_energyHigh;
@@ -332,12 +472,19 @@ private:
 	void onBrowse(wxCommandEvent& event);
 
 	// Other feature functions
+	void makeNewTilesetPalettes();
 	void shuffleTilesetPalettes();
+	void fixHeatPalettes(wxColour *tilesets[29]);
+	void fixGlowPalettes(wxColour *tilesets[29]);
+	void processTilesetTemplate(wxColour *tilesets[29], wxVector<PalColour *> templates[29], int t);
+	void writeLockedPaletteColours(wxColour *tilesets[29]);
 	void shuffleEnemyPalettes();
 	void shuffleBeamPalettes();
 	void shuffleSuitPalettes();
 	void shuffleFontText();
 	void shuffleFontNumbers();
+	void shuffleFX1();
+	void floodFX1();
 
 	// Seed functions
 	void getSeed();
@@ -347,6 +494,11 @@ private:
 	bool checkRequirements(Node *node, ItemDict itemPool);
 	void setItem(wxVector<Location> &locations, int pos, uint64_t item, ItemDict &itemPool, int &allWeights);
 	void resetLocationsAndItems(wxVector<Location> &locations, wxVector<Location> &locationsMinor, ItemDict &itemPool, int &allWeights);
+};
+
+class PaletteRenderer : public wxGridCellStringRenderer {
+public:
+    virtual void Draw(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc, const wxRect& rect, int row, int col, bool isSelected) wxOVERRIDE;
 };
 
 DECLARE_APP(Rando)

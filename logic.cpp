@@ -275,6 +275,7 @@ struct Location {
 		addr = a;
 		hidden = h;
 		major = m;
+		std::cout << "building tree for " << n << std::endl;
 		requirements = buildTree(r, p);
 		buildItems(requirements, p);		
 	}
@@ -591,6 +592,7 @@ void RandoFrame::resetLocationsAndItems(wxVector<Location> &locations, wxVector<
 	uint64_t kRMissilesMed  = kRMissilesAmmo + _player.missilesMed;
 	uint64_t kRMissilesHigh = kRMissilesAmmo + _player.missilesHigh;
 
+	// PB specific
 	wxString kRCanUsePB          = wxString::Format("( %ld & %ld )", kRMorphingBall, kRPowerBombs);
 	wxString kRCanAccessRB       = kRCanUsePB;	// This one seems to be as simple as having PBs...
 	wxString kRCanUseBomb        = wxString::Format("( %ld & %ld )", kRMorphingBall, kRBomb);
@@ -616,6 +618,119 @@ void RandoFrame::resetLocationsAndItems(wxVector<Location> &locations, wxVector<
 	wxString kRCanAccessMaridia  = wxString::Format("( %s & ( %ld | %ld ) & %s & %ld )", kRCanAccessRB, kRGravitySuit, kRCanWaterWJ, kRCanUsePB, kREnergyHigh);
 	wxString kRCanAccessAquaduct = wxString::Format("( %s & ( %ld | %ld | %ld ) )", kRCanAccessMaridia, kRSpeedBooster, kRSpaceJump, kRGrappleBeam);
 	wxString kRCanMeetEtecoons   = wxString::Format("( %s & %s )", kRCanAccessGB, kRCanUsePB);
+
+	// Vanilla specific
+	wxString kRCanDefeatPhantoon = wxString::Format("( %s & %ld & ( %ld | %ld | %ld ) )", kRCanAccessWS, kRChargeBeam, kRGravitySuit, kRVariaSuit, kREnergyLow);
+	wxString kRCanAccessOuterM   = wxString::Format("( %s & %ld & %ld & ( %ld | %ld ) )", kRCanAccessRB, kRPowerBombs, kRGravitySuit, kRSpaceJump, kRHiJumpBoots);
+	wxString kRCanAccessInnerM   = wxString::Format("( %s & ( %ld | %ld | %ld ) )", kRCanAccessOuterM, kRSpaceJump, kRGrappleBeam, kRSpeedBooster);
+	wxString kRCanDefeatBotwoon  = wxString::Format("( %s & ( %ld | %ld ) )", kRCanAccessInnerM, kRIceBeam, kRSpeedBooster);
+	wxString kRCanDefeatDraygon  = wxString::Format("( %s & %ld & %ld )", kRCanDefeatBotwoon, kRSpaceJump, kREnergyLow);
+	wxString kRCanAccessRBV	     = wxString::Format("( %ld & ( ( %s & %ld ) | %s ) )", kRSupers, kRCanDestroyBomb, kRMorphingBall, kRCanUsePB);
+	wxString kRCanAccessNorfairV = wxString::Format("( %s & ( %ld | %ld ) & ( %ld | ( %ld & %ld ) | ( %ld & %ld ) ) )", kRCanAccessRBV, kRSpaceJump, kRHiJumpBoots, kRVariaSuit, kRGravitySuit, kRGravityHeat, kRCanHeatRun, kREnergyHeatLow);
+	wxString kRCanAccessCrocV    = wxString::Format("( %s & ( ( %ld & %s ) | %ld ) )", kRCanAccessNorfairV, kRSpeedBooster, kRCanUsePB, kRWaveBeam);
+
+	// First the vanilla locations
+	Location locationsArrayVanilla[] = {
+	Location(_player, 0x781CC, "Power Bomb (Crateria surface)", 				 kNormal, kMinor, wxString::Format("%s & ( %ld | %ld )", kRCanUsePB, kRSpeedBooster, kRSpaceJump)),
+	Location(_player, 0x781E8, "Missile (Underwater outside Wrecked Ship)", 	 kNormal, kMinor, kRCanAccessWS),
+	Location(_player, 0x781EE, "Missile (outside Wrecked Ship top)", 			 kNormal, kMinor, kRCanDefeatPhantoon),
+	Location(_player, 0x781F4, "Missile (outside WS under super block)", 		 kNormal, kMinor, kRCanDefeatPhantoon),
+	Location(_player, 0x78248, "Missile (Crateria moat)", 						 kNormal, kMinor, wxString::Format("%ld & %s", kRSupers, kRCanUsePB)),
+	Location(_player, 0x78264, "Energy Tank (Crateria gauntlet)", 				 kNormal, kMajor, wxString::Format("%s & ( %ld | %ld )", kRGauntlet, kRSpaceJump, kRSpeedBooster)),
+	Location(_player, 0x783EE, "Missile (Crateria Final Missiles)", 			 kNormal, kMinor, kRCanEnterPassages),
+	Location(_player, 0x78404, "Bomb", 											 kNormal, kMajor, wxString::Format("%s & %s", kRCanOpenMissile, kRCanEnterPassages)),
+	Location(_player, 0x78432, "Energy Tank (Crateria terminator)", 			 kNormal, kMajor, kRCanDestroyBomb),
+	Location(_player, 0x78464, "Missile (Crateria old MB missiles)", 			 kNormal, kMinor, wxString::Format("%ld & ( %ld | %ld | %ld )", kRMorphingBall, kRBomb, kRPowerBombs, kRScrewAttack)),
+	Location(_player, 0x7846A, "Missile (Crateria 2st gauntlet missiles)", 		 kNormal, kMinor, wxString::Format("%s & ( %ld | %ld ) & %s", kRGauntlet, kRSpaceJump, kRSpeedBooster, kRCanEnterPassages)),
+	Location(_player, 0x78478, "Missile (Crateria 1st gauntlet missiles)", 		 kNormal, kMinor, wxString::Format("%s & ( %ld | %ld ) & %s", kRGauntlet, kRSpaceJump, kRSpeedBooster, kRCanEnterPassages)),
+	Location(_player, 0x78486, "Super Missile (Crateria supers)", 				 kNormal, kMinor, wxString::Format("%s & %ld & %ld", kRCanUsePB, kRSpeedBooster, kRIceBeam)),
+	Location(_player, 0x784AC, "Power Bomb (Brinstar Etecoons)", 				 kChozo,  kMinor, kRCanUsePB),
+	Location(_player, 0x784E4, "Super Missile (Spospo Supers)", 				 kChozo,  kMajor, wxString::Format("%s & %ld", kRCanAccessPB, kRSupers)),
+	Location(_player, 0x78518, "Missile (Brinstar below Early Supers)", 		 kNormal, kMinor, wxString::Format("%s & %s & %ld", kRCanAccessGB, kRCanOpenMissile, kRMorphingBall)),
+	Location(_player, 0x7851E, "Super Missile (Brinstar Early Supers)", 		 kNormal, kMinor, wxString::Format("%s & %s & ( %s | ( %ld & %ld ) | ( %ld & %ld ) )", kRCanAccessGB, kRCanOpenMissile, kRCanSpeedball, kRMorphingBall, kRCanMochball, kRMorphingBall, kRDashBall)),
+	Location(_player, 0x7852C, "Reserve Tank (Brinstar Reserve)", 				 kChozo,  kMajor, wxString::Format("%s & %s & ( %s | ( %ld & %ld ) | ( %ld & %ld ) )", kRCanAccessGB, kRCanOpenMissile, kRCanSpeedball, kRMorphingBall, kRCanMochball, kRMorphingBall, kRDashBall)),
+	Location(_player, 0x78532, "Missile (Brinstar Reserve Ron Popeil Missiles)", kHidden, kMinor, wxString::Format("%s & %s & %s & ( %s | ( %ld & %ld ) | ( %ld & %ld ) )", kRCanAccessGB, kRCanOpenMissile, kRCanEnterPassages, kRCanSpeedball, kRMorphingBall, kRCanMochball, kRMorphingBall, kRDashBall)),
+	Location(_player, 0x78538, "Missile (Brinstar Reserve Missiles)", 			 kNormal, kMinor, wxString::Format("%s & %s & ( %s | ( %ld & %ld ) | ( %ld & %ld ) )", kRCanAccessGB, kRCanOpenMissile, kRCanSpeedball, kRMorphingBall, kRCanMochball, kRMorphingBall, kRDashBall)),
+	Location(_player, 0x78608, "Missile (Big Pink Brinstar top)", 				 kNormal, kMinor, wxString::Format("%s & ( %ld | %ld | %ld )", kRCanAccessPB, kRGrappleBeam, kRSpaceJump, kRSpeedBooster)),
+	Location(_player, 0x7860E, "Missile (Big Pink Brinstar Charge Missiles)", 	 kNormal, kMinor, kRCanAccessPB),
+	Location(_player, 0x78614, "Charge Beam", 									 kNormal, kMajor, kRCanAccessPB),
+	Location(_player, 0x7865C, "Power Bomb (Pink Brinstar Power Bombs)", 		 kNormal, kMinor, wxString::Format("%s & %s & ( %ld | %ld | %ld | %ld )", kRCanAccessPB, kRCanUsePB, kRGrappleBeam, kRSpaceJump, kRSpeedBooster, kRCanWallJump)),
+	Location(_player, 0x78676, "Missile (Brinstar Pipe Missiles)", 				 kNormal, kMinor, wxString::Format("%s | %s", kRCanAccessPB, kRCanEnterPassages)),
+	Location(_player, 0x786DE, "Morphing Ball", 								 kNormal, kMajor, ""),
+	Location(_player, 0x7874C, "Power Bomb (Blue Brinstar)", 					 kNormal, kMinor, kRCanUsePB),
+	Location(_player, 0x78798, "Missile (Blue Brinstar middle)", 				 kNormal, kMinor, wxString::Format("%ld & %s", kRMorphingBall, kRCanOpenMissile)),
+	Location(_player, 0x7879E, "Energy Tank (Blue Brinstar)", 					 kNormal, kMajor, wxString::Format("%s & ( %ld | %ld | %ld )", kRCanOpenMissile, kRHiJumpBoots, kRSpeedBooster, kRSpaceJump)),
+	Location(_player, 0x787C2, "Energy Tank (Brinstar near Etecoons E-tank)", 	 kNormal, kMajor, kRCanMeetEtecoons),
+	Location(_player, 0x787D0, "Super Missile (Brinstar near Etecoons)", 		 kNormal, kMinor, wxString::Format("%s & %ld", kRCanUsePB, kRSupers)),
+	Location(_player, 0x787FA, "Energy Tank (Pink Brinstar under Charge Beam)",  kNormal, kMajor, wxString::Format("%s & %s & %ld & %ld", kRCanAccessPB, kRCanUsePB, kRSpeedBooster, kRGravitySuit)),
+	Location(_player, 0x78802, "Missile (Blue Brinstar First Missiles)", 		 kChozo,  kMajor, wxString::Format("%ld", kRMorphingBall)),
+	Location(_player, 0x78824, "Energy Tank (Pink Brinstar Hoppers Room)", 		 kNormal, kMajor, wxString::Format("%s & %s & %ld", kRCanAccessPB, kRCanUsePB, kRWaveBeam)),
+	Location(_player, 0x78836, "Missile (Blue Brinstar first Billy Mays)", 		 kNormal, kMinor, wxString::Format("%s & %s & ( %ld | %ld )", kRCanOpenMissile, kRCanUsePB, kRSpaceJump, kRSpeedBooster)),
+	Location(_player, 0x7883C, "Missile (Blue Brinstar second Billy Mays)", 	 kNormal, kMinor, wxString::Format("%s & %s & ( %ld | %ld )", kRCanOpenMissile, kRCanUsePB, kRSpaceJump, kRSpeedBooster)),
+	Location(_player, 0x78876, "X-Ray Visor", 									 kNormal, kMajor, wxString::Format("%s & %s & ( %ld | %ld )", kRCanAccessRBV, kRCanUsePB, kRGrappleBeam, kRSpaceJump)),
+	Location(_player, 0x788CA, "Power Bomb (Beta Power Bomb Room)", 			 kNormal, kMinor, wxString::Format("%s & %ld & %s", kRCanAccessRBV, kRSupers, kRCanUsePB)),
+	Location(_player, 0x7890E, "Power Bomb (Alpha Power Bomb Room)", 			 kChozo,  kMinor, wxString::Format("%s & %ld", kRCanAccessRBV, kRSupers)),
+	Location(_player, 0x78914, "Missile (Alpha Power Bomb Room)", 				 kNormal, kMinor, wxString::Format("%s & %s", kRCanAccessRBV, kRCanDestroyBomb)),
+	Location(_player, 0x7896E, "Spazer", 										 kChozo,  kMajor, wxString::Format("%s & %s & %ld & ( %ld | %ld )", kRCanAccessRBV, kRCanEnterPassages, kRSupers, kRSpaceJump, kRHiJumpBoots)),
+	Location(_player, 0x7899C, "Energy Tank (Kraid)", 							 kHidden, kMajor, wxString::Format("%s & %s", kRCanAccessRBV, kRCanDefeatKraid)),
+	Location(_player, 0x789EC, "Missile (Kraid)", 								 kHidden, kMinor, wxString::Format("%s & %s & %s", kRCanAccessRBV, kRCanDefeatKraid, kRCanUsePB)),
+	Location(_player, 0x78ACA, "Varia Suit", 									 kNormal, kMajor, wxString::Format("%s & %s", kRCanAccessRBV, kRCanDefeatKraid)),
+	Location(_player, 0x78AE4, "Missile (Cathedral Missiles)", 					 kHidden, kMinor, kRCanAccessNorfairV),
+	Location(_player, 0x78B24, "Ice Beam", 										 kNormal, kMajor, kRCanAccessIce),
+	Location(_player, 0x78B46, "Missile (Left Grapple Missiles)", 				 kNormal, kMinor, wxString::Format("%s | ( %s & %s )", kRCanAccessIce, kRCanAccessCrocV, kRCanEnterPassages)),
+	Location(_player, 0x78BA4, "Energy Tank (Crocomire)", 						 kNormal, kMajor, kRCanAccessCrocV),
+	Location(_player, 0x78BAC, "Hi-Jump Boots", 								 kNormal, kMajor, wxString::Format("%s & %s", kRCanAccessRBV, kRCanEnterPassages)),
+	Location(_player, 0x78BC0, "Missile (Crocomire Escape)", 					 kNormal, kMinor, kRCanAccessCrocV),
+	Location(_player, 0x78BE6, "Missile (Hi-Jump Boots)", 						 kNormal, kMinor, wxString::Format("%s & %s", kRCanAccessRBV, kRCanEnterPassages)),
+	Location(_player, 0x78BEC, "Energy Tank (Hi-Jump Boots)", 					 kNormal, kMajor, wxString::Format("%s & %s", kRCanAccessRBV, kRCanEnterPassages)),
+	Location(_player, 0x78C04, "Power Bomb (Grapple Power Bombs)", 				 kNormal, kMinor, wxString::Format("%s & ( %ld | %ld )", kRCanAccessCrocV, kRSpaceJump, kRGrappleBeam)),
+	Location(_player, 0x78C14, "Missile (Crocomire)", 							 kNormal, kMinor, kRCanAccessCrocV),
+	Location(_player, 0x78C2A, "Missile (Right Grapple Missiles)", 				 kNormal, kMinor, wxString::Format("%s & ( %ld | %ld | %ld )", kRCanAccessCrocV, kRSpaceJump, kRGrappleBeam, kRSpeedBooster)),
+	Location(_player, 0x78C36, "Grapple Beam", 									 kChozo,  kMajor, wxString::Format("%s & ( %ld | ( %ld & %ld ) )", kRCanAccessCrocV, kRSpaceJump, kRSpeedBooster, kRHiJumpBoots)),
+	Location(_player, 0x78C3E, "Reserve Tank (Norfair Reserves)", 				 kChozo,  kMajor, wxString::Format("%s & ( %ld | %ld )", kRCanAccessNorfairV, kRSpaceJump, kRGrappleBeam)),
+	Location(_player, 0x78C44, "Missile (Norfair Reserves 2nd Missiles)", 		 kNormal, kMinor, wxString::Format("%s & ( %ld | %ld )", kRCanAccessNorfairV, kRSpaceJump, kRGrappleBeam)),
+	Location(_player, 0x78C52, "Missile (Norfair Reserves 1st Missiles)", 		 kNormal, kMinor, wxString::Format("%s & ( %ld | %ld )", kRCanAccessNorfairV, kRSpaceJump, kRGrappleBeam)),
+	Location(_player, 0x78C66, "Missile (Bubble Mountain)", 					 kNormal, kMinor, kRCanAccessNorfairV),
+	Location(_player, 0x78C74, "Missile (Speed Booster)", 						 kHidden, kMinor, kRCanAccessNorfairV),
+	Location(_player, 0x78C82, "Speed Booster", 								 kNormal, kMajor, kRCanAccessNorfairV),
+	Location(_player, 0x78CBC, "Missile (Wave Missiles)", 						 kNormal, kMinor, kRCanAccessNorfairV),
+	Location(_player, 0x78CCA, "Wave Beam", 									 kNormal, kMajor, wxString::Format("%s & %s & ( %ld | %ld )", kRCanAccessNorfairV, kRCanOpenMissile, kRGrappleBeam, kRSpaceJump)),
+	Location(_player, 0x78E6E, "Missile (Gold Torizo)", 						 kNormal, kMinor, kRCanAccessLN),
+	Location(_player, 0x78E74, "Super Missile (Gold Torizo)", 					 kNormal, kMinor, kRCanAccessLN),
+	Location(_player, 0x78F30, "Missile (Mickey Mouse)", 						 kNormal, kMinor, kRCanAccessLN),
+	Location(_player, 0x78FCA, "Missile (Spring Ball Maze)", 					 kNormal, kMinor, kRCanAccessLN),
+	Location(_player, 0x78FD2, "Power Bomb (Spring Ball Maze)", 				 kNormal, kMinor, kRCanAccessLN),
+	Location(_player, 0x790C0, "Power Bomb (Power Bombs of Shame)", 			 kNormal, kMinor, kRCanAccessLN),
+	Location(_player, 0x79100, "Missile (FrankerZ)", 							 kNormal, kMinor, wxString::Format("%s & %s", kRCanAccessLN, kRCanEnterPassages)),
+	Location(_player, 0x79108, "Energy Tank (Ridley)", 							 kNormal, kMajor, wxString::Format("%s & %ld & %ld", kRCanAccessLN, kRChargeBeam, kREnergyMed)),
+	Location(_player, 0x79110, "Screw Attack", 									 kNormal, kMajor, kRCanAccessLN),
+	Location(_player, 0x79184, "Energy Tank (Lower Norfair Fire Flea E-tank)", 	 kNormal, kMajor, kRCanAccessLN),
+	Location(_player, 0x7C265, "Missile (Wrecked Ship Spike Room)", 			 kNormal, kMinor, kRCanAccessWS),
+	Location(_player, 0x7C2E9, "Reserve Tank (Wrecked Ship Reserves)", 			 kChozo,  kMajor, wxString::Format("%s & %ld", kRCanDefeatPhantoon, kRSpeedBooster)),
+	Location(_player, 0x7C2EF, "Missile (Gravity Suit)", 						 kNormal, kMinor, kRCanDefeatPhantoon),
+	Location(_player, 0x7C319, "Missile (Wrecked Ship Attic)", 					 kNormal, kMinor, kRCanDefeatPhantoon),
+	Location(_player, 0x7C337, "Energy Tank (Wrecked Ship)", 					 kNormal, kMajor, wxString::Format("%s & %ld & ( %ld | %ld )", kRCanDefeatPhantoon, kRGravitySuit, kRGrappleBeam, kRSpaceJump)),
+	Location(_player, 0x7C357, "Super Missile (Wrecked Ship left)", 			 kNormal, kMinor, kRCanDefeatPhantoon),
+	Location(_player, 0x7C365, "Super Missile (Wrecked Ship right)", 			 kNormal, kMinor, kRCanDefeatPhantoon),
+	Location(_player, 0x7C36D, "Gravity Suit", 									 kNormal, kMajor, kRCanDefeatPhantoon),
+	Location(_player, 0x7C437, "Missile (Maridia Main Street)", 				 kNormal, kMinor, wxString::Format("%s & %ld", kRCanAccessOuterM, kRSpeedBooster)),
+	Location(_player, 0x7C43D, "Super Missile (Maridia Crab Supers)", 			 kNormal, kMinor, kRCanAccessOuterM),
+	Location(_player, 0x7C47D, "Energy Tank (Maridia Turtles)", 				 kNormal, kMajor, wxString::Format("%s & ( %ld | %ld | %ld )", kRCanAccessOuterM, kRSpaceJump, kRGrappleBeam, kRSpeedBooster)),
+	Location(_player, 0x7C483, "Missile (Maridia Turtles)", 					 kNormal, kMinor, kRCanAccessOuterM),
+	Location(_player, 0x7C4AF, "Super Missile (Maridia Watering Hole Supers)", 	 kNormal, kMinor, kRCanAccessInnerM),
+	Location(_player, 0x7C4B5, "Missile (Maridia Watering Hole Missiles)", 		 kNormal, kMinor, kRCanAccessInnerM),
+	Location(_player, 0x7C533, "Missile (Maridia Beach Missiles)", 				 kNormal, kMinor, kRCanAccessInnerM),
+	Location(_player, 0x7C559, "Plasma Beam", 									 kNormal, kMajor, wxString::Format("%s & %ld & ( %ld | %ld )", kRCanDefeatDraygon, kRSpaceJump, kRScrewAttack, kRPlasmaBeam)),
+	Location(_player, 0x7C5DD, "Missile (Maridia left sand pit room)", 			 kNormal, kMinor, wxString::Format("%s & %ld", kRCanAccessOuterM, kRSpringBall)),
+	Location(_player, 0x7C5E3, "Reserve Tank (Maridia Reserves)", 				 kChozo,  kMajor, wxString::Format("%s & %ld", kRCanAccessOuterM, kRSpringBall)),
+	Location(_player, 0x7C5EB, "Missile (Maridia right sand pit room)", 		 kNormal, kMinor, kRCanAccessOuterM),
+	Location(_player, 0x7C5F1, "Power Bomb (Maridia right sand pit room)", 		 kNormal, kMinor, kRCanAccessOuterM),
+	Location(_player, 0x7C603, "Missile (Aqueduct Missiles)", 					 kNormal, kMinor, wxString::Format("%s & %ld", kRCanAccessOuterM, kRSpeedBooster)),
+	Location(_player, 0x7C609, "Super Missile (Aqueduct Supers)", 				 kNormal, kMinor, wxString::Format("%s & %ld", kRCanAccessOuterM, kRSpeedBooster)),
+	Location(_player, 0x7C6E5, "Spring Ball", 									 kNormal, kMajor, wxString::Format("%s & %ld & %ld", kRCanAccessOuterM, kRGrappleBeam, kRSpaceJump)),
+	Location(_player, 0x7C74D, "Missile (Draygon)",								 kHidden, kMinor, kRCanDefeatDraygon),
+	Location(_player, 0x7C755, "Energy Tank (Botwoon)", 						 kNormal, kMajor, kRCanDefeatBotwoon),
+	Location(_player, 0x7C7A7, "Space Jump", 									 kNormal, kMajor, kRCanDefeatDraygon)};
 
 	// Then the PB locations
 	Location locationsArrayPB[] = {
@@ -725,20 +840,32 @@ void RandoFrame::resetLocationsAndItems(wxVector<Location> &locations, wxVector<
 	Location(_player, 0x7C791, "Space Jump", 									 kNormal, kMajor, wxString::Format("%s & ( %ld | %ld | %ld )", kRCanAccessAquaduct, kRGrappleBeam, kRSpaceJump, kRCanWallJump)),
 	Location(_player, 0x7C4B1, "Missile (Maridia Map Station Missiles Corridor)",kNormal, kMinor, kRCanAccessRB)};
 
+	// First we want to decide whether to use PB or vanilla locations
+	Location *locationsArray;
+	int numLocations = 105;
+
+	if (_romType->GetValue() == false) {
+		locationsArray = locationsArrayPB;
+
+	} else {
+		locationsArray = locationsArrayVanilla;
+		numLocations = 100;
+	}
+
 	// If the player chose major/minor, we want to section off the major locations from the minors
 	if (_player.majorMinor == true) {
-		for (int i = 0; i < 105; i++) {
-			if (locationsArrayPB[i].major == kMajor) {
-				locations.push_back(locationsArrayPB[i]);
+		for (int i = 0; i < numLocations; i++) {
+			if (locationsArray[i].major == kMajor) {
+				locations.push_back(locationsArray[i]);
 
 			} else {
-				locationsMinor.push_back(locationsArrayPB[i]);
+				locationsMinor.push_back(locationsArray[i]);
 			}
 		}
 	
 	} else {
-		for (int i = 0; i < 105; i++) {
-			locations.push_back(locationsArrayPB[i]);
+		for (int i = 0; i < numLocations; i++) {
+			locations.push_back(locationsArray[i]);
 		}
 	}
 
@@ -771,7 +898,13 @@ void RandoFrame::resetLocationsAndItems(wxVector<Location> &locations, wxVector<
 
 	// There are max 50 Missiles
 	itemPool[kRMissiles] = Item("Missile", 0xEEDB, 150);
-	itemPool[kRMissiles].number = 50;
+	if (_romType->GetValue() == false) {
+		itemPool[kRMissiles].number = 50;
+
+	} else {
+		// In the vanilla map, we want to remove one missile to include dash ball
+		itemPool[kRMissiles].number = 49;
+	}
 	itemPool[kRMissiles].major = kMinor;
 
 	// And max 10 Supers/Power Bombs
