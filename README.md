@@ -9,6 +9,7 @@ I will provide a proper readme here in the future, but for the moment just the b
 - The controls button currently does not do anything, but in the future I will have it pop out a small window to configure your controls before starting the seed
 
 Credit:
+Björn Ottosson - creator of okLab, which is used in the palette randomizer
 
 Dessy - creator of the Super Metroid randomizer from which the previous Project Base randomizer versions were based
 
